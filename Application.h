@@ -24,6 +24,8 @@ public:
 
     void Search();
 
+    void Replace();
+
 private:
     int mCmd;
     void* mPtr;

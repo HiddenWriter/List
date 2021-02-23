@@ -12,68 +12,77 @@ Application::~Application()
 }
 void Application::Run()
 {
-    bool appType(false);
-    while (!appType)
+    while (1)
     {
-        std::cout <<
-            "\t\t Array Test \n\n" <<
-            "\t\t 1 : Array Stack \n" <<
-            "\t\t >>";
-        std::cin >> mCmd;
-        std::cout << "\n";
-        switch (mCmd)
+        bool appType(false);
+        while (!appType)
         {
-        case 1:
+            std::cout <<
+                "\n\t       Array Test \n" <<
+                "\n\t 1 : Array Stack " <<
+                "\n\t 0 : Terminate Programme" <<
+                "\n\t >>";
+            std::cin >> mCmd;
+            std::cout << "\n";
+            switch (mCmd)
+            {
+            case 1:
             {
                 GetType() = TYPE::STACKARRAY;
                 mPtr = new ArrayStack<ItemType>[1];
                 appType = true;
                 break;
             }
+            case 0:
+                return;
             default:
             {
                 std::cout <<
-                "\n\t\t Undefined Command \n";
+                    "\n\t\t Undefined Command \n";
+                break;
+            }
+            }
+        }
+        bool workCmd(false);
+        while (!workCmd)
+        {
+            PrintType();
+            std::cout <<
+                "\n" <<
+                "\n\t 1 : Add Item \n" <<
+                "\n\t 2 : Delete Item \n" <<
+                "\n\t 3 : Print Item \n" <<
+                "\n\t 4 : Search Item \n" <<
+                "\n\t 5 : Replace Item \n" <<
+                "\n\t 0 : Return to main menu \n";
+            std::cin >> mCmd;
+
+            switch (mCmd)
+            {
+            case 1:
+                Add();
+                break;
+            case 2:
+                Delete();
+                break;
+            case 3:
+                Print();
+                break;
+            case 4:
+                Search();
+                break;
+            case 5:
+                Replace();
+                break;
+            case 0:
+                workCmd = true;
+                Destroy();
+                break;
+            default:
                 break;
             }
         }
     }
-    bool workCmd(false);
-    while(!workCmd)
-    {
-         PrintType();
-        std::cout << 
-        "\n" <<
-        "\t\t 1 : Add Item \n" <<
-        "\t\t 2 : Delete Item \n" <<
-        "\t\t 3 : Print Item \n" <<
-        "\t\t 4 : Search Item \n"
-        "\t\t 0 : Return to main menu \n";
-        std::cin >> mCmd;
-
-        switch (mCmd)
-        {
-        case 1:
-            Add();
-            break;
-        case 2:
-            Delete();
-            break;
-        case 3:
-            Print();
-            break;
-        case 4:
-            Search();
-            break;
-        case 0:
-            appType = false;
-            Destroy();
-            break;
-        default:
-            break;
-        }   
-    }
-
 }
 
 TYPE& Application::GetType() noexcept
@@ -197,6 +206,44 @@ void Application::Search()
         {
             sux = true;
             std::cout << "\n" << item.value();
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    if (sux)
+    {
+        std::cout << msg.first;
+    }
+    else
+    {
+        std::cout << msg.second;
+    }
+}
+
+void Application::Replace()
+{
+    bool sux(false);
+    switch (GetType())
+    {
+    case TYPE::STACKARRAY:
+    {
+        ItemType tempItem;
+        int tempIndex(0);
+        std::cout <<
+            "\n\t Index : ";
+        std::cin >> tempIndex;
+        tempItem.SetAll();
+
+        if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem))
+        {
+            sux = true;
+            std::cout <<
+                "\n\t Item Changed " <<
+                "\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
+                "\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
+
         }
         break;
     }
