@@ -20,41 +20,41 @@ void Application::Run()
             std::cout <<
                 "\n\t       Array Test \n" <<
                 "\n\t 1 : Array Stack " <<
+                "\n\t 2 : Array Queue " <<
                 "\n\t 0 : Terminate Programme" <<
                 "\n\t >>";
             std::cin >> mCmd;
             std::cout << "\n";
             switch (mCmd)
             {
-            case 1:
-            {
-                GetType() = TYPE::STACKARRAY;
-                mPtr = new ArrayStack<ItemType>[1];
-                appType = true;
-                break;
-            }
-            case 0:
-                return;
-            default:
-            {
-                std::cout <<
-                    "\n\t\t Undefined Command \n";
-                break;
-            }
+				case 1:
+				{
+					GetType() = TYPE::STACKARRAY;
+					mPtr = new ArrayStack<ItemType>[1];
+					appType = true;
+					break;
+				}
+				case 2:
+				{
+					GetType() = TYPE::QUEUEARRAY;
+					mPtr = new ArrayQueue<ItemType>[1];
+					appType = true;
+					break;
+				}
+				case 0:
+					return;
+				default:
+				{
+					std::cout <<
+						"\n\t\t Undefined Command \n";
+					break;
+				}
             }
         }
         bool workCmd(false);
         while (!workCmd)
         {
             PrintType();
-            std::cout <<
-                "\n" <<
-                "\n\t 1 : Add Item \n" <<
-                "\n\t 2 : Delete Item \n" <<
-                "\n\t 3 : Print Item \n" <<
-                "\n\t 4 : Search Item \n" <<
-                "\n\t 5 : Replace Item \n" <<
-                "\n\t 0 : Return to main menu \n";
             std::cin >> mCmd;
 
             switch (mCmd)
@@ -95,9 +95,30 @@ void Application::PrintType() noexcept
 {
     switch (GetType())
     {
-    case TYPE::STACKARRAY:
+		case TYPE::STACKARRAY:
+		{
+			std::cout << "\t\t Array Stack \n";
+			std::cout <<
+				"\n" <<
+				"\n\t 1 : Add Item \n" <<
+				"\n\t 2 : Delete Item \n" <<
+				"\n\t 3 : Print Item \n" <<
+				"\n\t 4 : Search Item \n" <<
+				"\n\t 5 : Replace Item \n" <<
+				"\n\t 0 : Return to main menu \n";
+
+			break;
+		}
+        case TYPE::QUEUEARRAY:
         {
-            std::cout << "\t\t STACKARRAY \n";
+            std::cout << "\t\t Array Queue \n";
+            std::cout <<
+                "\n" <<
+                "\n\t 1 : Add Item \n" <<
+                "\n\t 2 : Delete Item \n" <<
+                "\n\t 3 : Print Item \n" <<
+                "\n\t 0 : Return to main menu \n";
+
             break;
         }
     default:
@@ -135,6 +156,12 @@ void Application::Add()
             if (static_cast<ArrayStack<ItemType>*>(mPtr)->Add(tempIndex, tempItem)) sux = true;
 
         }
+    case TYPE::QUEUEARRAY:
+        {
+			ItemType tempItem;
+			tempItem.SetAll();
+			if (static_cast<ArrayQueue<ItemType>*>(mPtr)->Add(tempItem)) sux = true;
+		}
         break;
     default:
         break;
@@ -164,6 +191,19 @@ void Application::Delete()
 
 			break;
 		}
+    case TYPE::QUEUEARRAY:
+        {
+            std::optional<ItemType> x;
+            if (x = static_cast<ArrayQueue<ItemType>*>(mPtr)->Delete())
+            {
+                std::cout <<
+                    "\n\t Deleted Item : " <<
+                    x.value() <<
+                    "\n";
+                sux = true;
+            }
+            break;
+        }
     default:
         break;
     }
@@ -184,6 +224,11 @@ void Application::Print()
     case TYPE::STACKARRAY:
     {
         static_cast<ArrayStack<ItemType>*>(mPtr)->Print();
+        break;
+    }
+    case TYPE::QUEUEARRAY:
+    {
+        static_cast<ArrayQueue<ItemType>*>(mPtr)->Print();
         break;
     }
     default:
@@ -209,6 +254,10 @@ void Application::Search()
         }
         break;
     }
+    case TYPE::QUEUEARRAY:
+        std::cout <<
+            "\n\t Not implemented \n";
+        break;
     default:
         break;
     }
@@ -247,6 +296,10 @@ void Application::Replace()
         }
         break;
     }
+    case TYPE::QUEUEARRAY:
+        std::cout <<
+            "\n\t Not implemented \n";
+        break;
     default:
         break;
     }
@@ -265,6 +318,9 @@ void Application::Destroy()
     {
     case TYPE::STACKARRAY:
         delete[] static_cast<ArrayStack<ItemType>*>(mPtr);
+        break;
+    case TYPE::QUEUEARRAY:
+        delete[] static_cast<ArrayQueue<ItemType>*>(mPtr);
         break;
     default:
         break;

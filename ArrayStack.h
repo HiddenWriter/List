@@ -13,10 +13,13 @@ public:
     bool Add(int _i, T _x);
     std::optional<T> DeleteByIndex(int _i);
     int GetSize() const noexcept;
-    void Resize();
     void Print() noexcept;
 
-protected:
+private:
+
+    void Resize();
+
+private:
     Array<T> mArr;
     int mSize;
 };

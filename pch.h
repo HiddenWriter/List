@@ -3,7 +3,7 @@
 
 enum class TYPE
 {
-    STACKARRAY, UNDEFINED
+    STACKARRAY, QUEUEARRAY, UNDEFINED
 };
 #include <iostream>
 #include <memory>
@@ -14,6 +14,7 @@ enum class TYPE
 #include "Array.h"
 #include "ItemType.h"
 #include "ArrayStack.h"
+#include "ArrayQueue.h"
 #include "Application.h"
 
 #endif PCH_H
