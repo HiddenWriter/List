@@ -21,6 +21,7 @@ void Application::Run()
                 "\n\t       Array Test \n" <<
                 "\n\t 1 : Array Stack " <<
                 "\n\t 2 : Array Queue " <<
+                "\n\t 3 : Array Deque " <<
                 "\n\t 0 : Terminate Programme" <<
                 "\n\t >>";
             std::cin >> mCmd;
@@ -41,6 +42,13 @@ void Application::Run()
 					appType = true;
 					break;
 				}
+                case 3:
+                {
+                    GetType() = TYPE::DEQUEARRAY;
+                    mPtr = new ArrayDeque<ItemType>[1];
+                    appType = true;
+                    break;
+                }
 				case 0:
 					return;
 				default:
@@ -121,6 +129,19 @@ void Application::PrintType() noexcept
 
             break;
         }
+        case TYPE::DEQUEARRAY:
+        {
+            std::cout << "\t\t Array Deque \n";
+            std::cout <<
+                "\n" <<
+                "\n\t 1 : Add Item \n" <<
+                "\n\t 2 : Delete Item \n" <<
+                "\n\t 3 : Print Item \n" <<
+                "\n\t 4 : Search Item \n" <<
+                "\n\t 5 : Replace Item \n" <<
+                "\n\t 0 : Return to main menu \n";
+            break;
+        }
     default:
         break;
     }
@@ -154,15 +175,27 @@ void Application::Add()
             }
 			tempItem.SetAll();
             if (static_cast<ArrayStack<ItemType>*>(mPtr)->Add(tempIndex, tempItem)) sux = true;
-
+            break;
         }
     case TYPE::QUEUEARRAY:
         {
 			ItemType tempItem;
 			tempItem.SetAll();
 			if (static_cast<ArrayQueue<ItemType>*>(mPtr)->Add(tempItem)) sux = true;
+            break;
 		}
-        break;
+    case TYPE::DEQUEARRAY:
+        {
+            ItemType tempItem;
+            int tempIndex(0);
+            tempItem.SetAll();
+            std::cout <<
+                "\n\t Index to Add : ";
+            std::cin >> tempIndex;
+            std::cout << "\n";
+            if (static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(tempIndex, tempItem)) sux = true;
+            break;
+        }
     default:
         break;
     }
@@ -184,9 +217,9 @@ void Application::Delete()
     case TYPE::STACKARRAY:
 		{
 			int tempIndex(0);
-			std::cout <<
-				"\n\t Index : ";
+			std::cout << "\n\t Index : ";
 			std::cin >> tempIndex;
+            std::cout << "\n";
 			if (static_cast<ArrayStack<ItemType>*>(mPtr)->DeleteByIndex(tempIndex)) sux = true;
 
 			break;
@@ -204,6 +237,23 @@ void Application::Delete()
             }
             break;
         }
+    case TYPE::DEQUEARRAY:
+		{
+			int idx(0);
+			std::cout << "\n\t Index : ";
+			std::cin >> idx;
+			std::cout << "\n";
+			std::optional<ItemType> x;
+			if (x = static_cast<ArrayDeque<ItemType>*>(mPtr)->Delete(idx))
+			{
+				std::cout <<
+					"\n\t Deleted Item : " <<
+					x.value() <<
+					"\n";
+				sux = true;
+			}
+			break;
+		}
     default:
         break;
     }
@@ -231,6 +281,11 @@ void Application::Print()
         static_cast<ArrayQueue<ItemType>*>(mPtr)->Print();
         break;
     }
+    case TYPE::DEQUEARRAY:
+    {
+        static_cast<ArrayDeque<ItemType>*>(mPtr)->Print();
+        break;
+    }
     default:
         break;
     }
@@ -242,29 +297,46 @@ void Application::Search()
     switch (GetType())
     {
     case TYPE::STACKARRAY:
-    {
-        int tempIndex(0);
-        std::cout <<
-            "\n\t Index : ";
-        std::cin >> tempIndex;
-        if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Get(tempIndex))
-        {
-            sux = true;
-            std::cout << "\n" << item.value();
-        }
-        break;
-    }
+		{
+			int tempIndex(0);
+			std::cout <<
+				"\n\t Index : ";
+			std::cin >> tempIndex;
+			if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Get(tempIndex))
+			{
+				sux = true;
+				std::cout << "\n" << item.value();
+			}
+			break;
+		}
     case TYPE::QUEUEARRAY:
+        {
         std::cout <<
             "\n\t Not implemented \n";
         break;
+        }
+
     default:
         break;
+		case TYPE::DEQUEARRAY:
+		{
+			int idx(0);
+			std::cout << "\n\t Index : ";
+			std::cin >> idx;
+            if (auto item = static_cast<ArrayDeque<ItemType>*>(mPtr)->Get(idx))
+            {
+                sux = true;
+                std::cout << 
+                    "\n\t" << 
+                    item.value();
+            }
+            break;
+		}
     }
-    if (sux)
-    {
+   if (sux)
+   {
         std::cout << msg.first;
-    }
+   }
     else
     {
         std::cout << msg.second;
@@ -277,29 +349,50 @@ void Application::Replace()
     switch (GetType())
     {
     case TYPE::STACKARRAY:
+		{
+			ItemType tempItem;
+			int tempIndex(0);
+			std::cout <<
+				"\n\t Index : ";
+			std::cin >> tempIndex;
+			tempItem.SetAll();
+
+			if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem))
+			{
+				sux = true;
+				std::cout <<
+					"\n\t Item Changed " <<
+					"\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
+					"\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
+
+			}
+			break;
+		}
+    case TYPE::QUEUEARRAY:
+        {
+			std::cout <<
+				"\n\t Not implemented \n";
+			break;
+        }
+    case TYPE::DEQUEARRAY:
     {
         ItemType tempItem;
-        int tempIndex(0);
-        std::cout <<
-            "\n\t Index : ";
-        std::cin >> tempIndex;
+        int idx(0);
+        
+        std::cout << "\n\t Index : ";
+		std::cin >> idx;
         tempItem.SetAll();
 
-        if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem))
+        if (auto item = static_cast<ArrayDeque<ItemType>*>(mPtr)->Set(idx, tempItem))
         {
             sux = true;
-            std::cout <<
+            std::cout << 
                 "\n\t Item Changed " <<
                 "\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
                 "\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
-
         }
         break;
     }
-    case TYPE::QUEUEARRAY:
-        std::cout <<
-            "\n\t Not implemented \n";
-        break;
     default:
         break;
     }
@@ -321,6 +414,9 @@ void Application::Destroy()
         break;
     case TYPE::QUEUEARRAY:
         delete[] static_cast<ArrayQueue<ItemType>*>(mPtr);
+        break;
+    case TYPE::DEQUEARRAY:
+        delete[] static_cast<ArrayDeque<ItemType>*>(mPtr);
         break;
     default:
         break;

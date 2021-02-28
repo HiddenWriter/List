@@ -70,7 +70,7 @@ void ArrayQueue<T>::Print()
 {
 	for (int i = 0; i < mNumOfElem; i++)
 	{
-		std::cout << mArr[i];
+		std::cout << mArr[(mCurrentIndex + i) % mArr.GetLength()];
 	}
 	return;
 }
