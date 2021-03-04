@@ -11,12 +11,12 @@ private:
 private:
 
 	void Resize();
-
+	
 public:
 
 	ArrayDeque();
 	~ArrayDeque() {}
-
+	
 	std::optional<T> Get(int _i);
 
 	std::optional<T> Set(int _i, T _x);
@@ -126,3 +126,4 @@ void ArrayDeque<T>::Resize()
 
 	return;
 }
+

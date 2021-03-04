@@ -1,5 +1,4 @@
 #pragma once
-
 template <typename T>
 class ArrayStack
 {
@@ -7,23 +6,27 @@ public:
 
     ArrayStack();
     ~ArrayStack();
-
+    
+    ArrayStack<T>& operator=(Array<T>& _arr);
+    ArrayStack<T>& operator=(int _int);
     std::optional<T> Get(int _i);
     std::optional<T> Set(int _i, T _x);
     bool Add(int _i, T _x);
-    std::optional<T> DeleteByIndex(int _i);
-    int GetSize() const noexcept;
+    std::optional<T> Delete(int _i);
+    const int GetSize() const noexcept;
+    const int GetLength() const noexcept;
     void Print() noexcept;
 
 private:
 
     void Resize();
 
-private:
+protected:
+
     Array<T> mArr;
     int mSize;
-};
 
+};
 template <typename T>
 ArrayStack<T>::ArrayStack()
     : mArr(1), mSize(0)
@@ -56,7 +59,7 @@ std::optional<T> ArrayStack<T>::Set(int _i, T _x)
 template <typename T>
 bool ArrayStack<T>::Add(int _i, T _x)
 {
-    if (_i > mSize) return false;
+    if (_i > mArr.GetLength()) return false;
     if (mSize + 1 > mArr.GetLength()) 
     {
         Resize();
@@ -73,7 +76,7 @@ bool ArrayStack<T>::Add(int _i, T _x)
 
 
 template <typename T>
-std::optional<T> ArrayStack<T>::DeleteByIndex(int _i)
+std::optional<T> ArrayStack<T>::Delete(int _i)
 {
     if (_i > mSize - 1)
     {
@@ -109,7 +112,7 @@ void ArrayStack<T>::Resize()
 }
 
 template <typename T>
-int ArrayStack<T>::GetSize() const noexcept
+const int ArrayStack<T>::GetSize() const noexcept
 {
     return this->mSize;
 }
@@ -123,4 +126,24 @@ void ArrayStack<T>::Print() noexcept
         std::cout << mArr[i];
     }
     return;
+}
+
+template <typename T>
+ArrayStack<T>& ArrayStack<T>::operator=(Array<T>& _arr)
+{
+    this->mArr = _arr;
+    return *this;
+}
+
+template <typename T>
+ArrayStack<T>& ArrayStack<T>::operator=(int _int)
+{
+    this->mSize = _int;
+    return *this;
+}
+
+template <typename T>
+const int ArrayStack<T>::GetLength() const noexcept
+{
+    return mArr.GetLength();
 }

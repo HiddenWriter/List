@@ -22,6 +22,7 @@ void Application::Run()
                 "\n\t 1 : Array Stack " <<
                 "\n\t 2 : Array Queue " <<
                 "\n\t 3 : Array Deque " <<
+                "\n\t 4 : Dual Array Deque " <<
                 "\n\t 0 : Terminate Programme" <<
                 "\n\t >>";
             std::cin >> mCmd;
@@ -46,6 +47,13 @@ void Application::Run()
                 {
                     GetType() = TYPE::DEQUEARRAY;
                     mPtr = new ArrayDeque<ItemType>[1];
+                    appType = true;
+                    break;
+                }
+                case 4:
+                {
+                    GetType() = TYPE::DUALARRAYDEQUE;
+                    mPtr = new DualArrayDeque<ItemType>[1];
                     appType = true;
                     break;
                 }
@@ -142,6 +150,19 @@ void Application::PrintType() noexcept
                 "\n\t 0 : Return to main menu \n";
             break;
         }
+        case TYPE::DUALARRAYDEQUE:
+        {
+            std::cout << "\t\t Dueal Array Deque \n";
+            std::cout <<
+                "\n" <<
+                "\n\t 1 : Add Item \n" <<
+                "\n\t 2 : Delete Item \n" <<
+                "\n\t 3 : Print Item \n" <<
+                "\n\t 4 : Search Item \n" <<
+                "\n\t 5 : Replace Item \n" <<
+                "\n\t 0 : Return to main menu \n";
+            break;
+        }
     default:
         break;
     }
@@ -196,6 +217,18 @@ void Application::Add()
             if (static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(tempIndex, tempItem)) sux = true;
             break;
         }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        ItemType tempItem;
+        int tempIndex(0);
+        tempItem.SetAll();
+        std::cout <<
+            "\n\t Index to Add : ";
+        std::cin >> tempIndex;
+        std::cout << "\n";
+        if (static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add(tempIndex, tempItem)) sux = true;
+        break;
+    }
     default:
         break;
     }
@@ -220,7 +253,7 @@ void Application::Delete()
 			std::cout << "\n\t Index : ";
 			std::cin >> tempIndex;
             std::cout << "\n";
-			if (static_cast<ArrayStack<ItemType>*>(mPtr)->DeleteByIndex(tempIndex)) sux = true;
+			if (static_cast<ArrayStack<ItemType>*>(mPtr)->Delete(tempIndex)) sux = true;
 
 			break;
 		}
@@ -254,6 +287,23 @@ void Application::Delete()
 			}
 			break;
 		}
+    case TYPE::DUALARRAYDEQUE:
+    {
+        int idx(0);
+        std::cout << "\n\t Index : ";
+        std::cin >> idx;
+        std::cout << "\n";
+        std::optional<ItemType> x;
+        if (x = static_cast<DualArrayDeque<ItemType>*>(mPtr)->Delete(idx))
+        {
+            std::cout <<
+                "\n\t Deleted Item : " <<
+                x.value() <<
+                "\n";
+            sux = true;
+        }
+        break;
+    }
     default:
         break;
     }
@@ -286,6 +336,11 @@ void Application::Print()
         static_cast<ArrayDeque<ItemType>*>(mPtr)->Print();
         break;
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        static_cast<DualArrayDeque<ItemType>*>(mPtr)->Print();
+        break;
+    }
     default:
         break;
     }
@@ -296,28 +351,26 @@ void Application::Search()
     bool sux(false);
     switch (GetType())
     {
-    case TYPE::STACKARRAY:
-		{
-			int tempIndex(0);
-			std::cout <<
-				"\n\t Index : ";
-			std::cin >> tempIndex;
-			if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Get(tempIndex))
+		case TYPE::STACKARRAY:
 			{
-				sux = true;
-				std::cout << "\n" << item.value();
+				int tempIndex(0);
+				std::cout <<
+					"\n\t Index : ";
+				std::cin >> tempIndex;
+				if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Get(tempIndex))
+				{
+					sux = true;
+					std::cout << "\n" << item.value();
+				}
+				break;
 			}
+		case TYPE::QUEUEARRAY:
+			{
+			std::cout <<
+				"\n\t Not implemented \n";
 			break;
-		}
-    case TYPE::QUEUEARRAY:
-        {
-        std::cout <<
-            "\n\t Not implemented \n";
-        break;
-        }
+			}
 
-    default:
-        break;
 		case TYPE::DEQUEARRAY:
 		{
 			int idx(0);
@@ -332,6 +385,23 @@ void Application::Search()
             }
             break;
 		}
+        case TYPE::DUALARRAYDEQUE:
+        {
+            int idx(0);
+            std::cout << "\n\t Index : ";
+            std::cin >> idx;
+            if (auto item = static_cast<DualArrayDeque<ItemType>*>(mPtr)->Get(idx))
+            {
+                sux = true;
+                std::cout <<
+                    "\n\t" <<
+                    item.value();
+            }
+            break;
+        }
+
+        default:
+            break;
     }
    if (sux)
    {
@@ -349,31 +419,31 @@ void Application::Replace()
     switch (GetType())
     {
     case TYPE::STACKARRAY:
+	{
+		ItemType tempItem;
+		int tempIndex(0);
+		std::cout <<
+			"\n\t Index : ";
+		std::cin >> tempIndex;
+		tempItem.SetAll();
+
+		if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem))
 		{
-			ItemType tempItem;
-			int tempIndex(0);
+			sux = true;
 			std::cout <<
-				"\n\t Index : ";
-			std::cin >> tempIndex;
-			tempItem.SetAll();
+				"\n\t Item Changed " <<
+				"\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
+				"\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
 
-			if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem))
-			{
-				sux = true;
-				std::cout <<
-					"\n\t Item Changed " <<
-					"\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
-					"\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
-
-			}
-			break;
 		}
+		break;
+	}
     case TYPE::QUEUEARRAY:
-        {
-			std::cout <<
-				"\n\t Not implemented \n";
-			break;
-        }
+	{
+		std::cout <<
+			"\n\t Not implemented \n";
+		break;
+	}
     case TYPE::DEQUEARRAY:
     {
         ItemType tempItem;
@@ -387,6 +457,25 @@ void Application::Replace()
         {
             sux = true;
             std::cout << 
+                "\n\t Item Changed " <<
+                "\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
+                "\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
+        }
+        break;
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        ItemType tempItem;
+        int idx(0);
+
+        std::cout << "\n\t Index : ";
+        std::cin >> idx;
+        tempItem.SetAll();
+
+        if (auto item = static_cast<DualArrayDeque<ItemType>*>(mPtr)->Set(idx, tempItem))
+        {
+            sux = true;
+            std::cout <<
                 "\n\t Item Changed " <<
                 "\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
                 "\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
@@ -417,6 +506,9 @@ void Application::Destroy()
         break;
     case TYPE::DEQUEARRAY:
         delete[] static_cast<ArrayDeque<ItemType>*>(mPtr);
+        break;
+    case TYPE::DUALARRAYDEQUE:
+        delete[] static_cast<DualArrayDeque<ItemType>*>(mPtr);
         break;
     default:
         break;

@@ -3,7 +3,7 @@
 
 enum class TYPE
 {
-    STACKARRAY, QUEUEARRAY, DEQUEARRAY, UNDEFINED
+    STACKARRAY, QUEUEARRAY, DEQUEARRAY, DUALARRAYDEQUE, UNDEFINED
 };
 #include <iostream>
 #include <memory>
@@ -16,6 +16,7 @@ enum class TYPE
 #include "ArrayStack.h"
 #include "ArrayQueue.h"
 #include "ArrayDeque.h"
+#include "DualArrayDeque.h"
 #include "Application.h"
 
 #endif PCH_H
