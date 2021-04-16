@@ -16,6 +16,7 @@ enum class TYPE
 #include "ArrayStack.h"
 #include "ArrayQueue.h"
 #include "ArrayDeque.h"
+#include "BDeque.h"
 #include "Application.h"
 
 #endif PCH_H

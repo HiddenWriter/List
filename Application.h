@@ -1,5 +1,6 @@
 #pragma once
 
+// Represents List interface
 class Application
 {
 public:
@@ -16,16 +17,17 @@ public:
 
     void Add();
 
-    void Delete();
+    void Remove();
 
     void Print();
 
     void Destroy();
 
-    void Search();
+    void Set();
 
-    void Replace();
+    void Get();
 
+    void Size();    
 private:
     int mCmd;
     void* mPtr;

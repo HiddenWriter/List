@@ -4,19 +4,17 @@ template <typename T>
 class ArrayStack
 {
 public:
-
     ArrayStack();
     ~ArrayStack();
 
-    std::optional<T> Get(int _i);
-    std::optional<T> Set(int _i, T _x);
-    bool Add(int _i, T _x);
-    std::optional<T> DeleteByIndex(int _i);
+    T Get(int _i);
+    T Set(int _i, T _x);
+    void Add(int _i, T _x);
+    T Remove(int _i);
     int GetSize() const noexcept;
     void Print() noexcept;
 
 private:
-
     void Resize();
 
 private:
@@ -27,7 +25,8 @@ private:
 template <typename T>
 ArrayStack<T>::ArrayStack()
     : mArr(1), mSize(0)
-{}
+{
+}
 
 template <typename T>
 ArrayStack<T>::~ArrayStack()
@@ -35,18 +34,20 @@ ArrayStack<T>::~ArrayStack()
     return;
 }
 template <typename T>
-std::optional<T> ArrayStack<T>::Get(int _i)
+T ArrayStack<T>::Get(int _i)
 {
-    if (_i > this->mSize) return {};
-    else return mArr[_i];
+    if (_i > this->mSize)
+        return nullptr;
+    else
+        return mArr[_i];
 }
 
 template <typename T>
-std::optional<T> ArrayStack<T>::Set(int _i, T _x)
+T ArrayStack<T>::Set(int _i, T _x)
 {
     if (_i > this->mSize)
     {
-        return {};
+        return nullptr;
     }
     T y = mArr[_i];
     mArr[_i] = _x;
@@ -54,13 +55,10 @@ std::optional<T> ArrayStack<T>::Set(int _i, T _x)
 }
 
 template <typename T>
-bool ArrayStack<T>::Add(int _i, T _x)
+void ArrayStack<T>::Add(int _i, T _x)
 {
-    if (_i > mSize) return false;
-    if (mSize + 1 > mArr.GetLength()) 
-    {
+    if (mSize + 1 > mArr.GetLength())
         Resize();
-    }
 
     for (int j = mSize; j > _i; j--)
     {
@@ -71,36 +69,28 @@ bool ArrayStack<T>::Add(int _i, T _x)
     return true;
 }
 
-
 template <typename T>
-std::optional<T> ArrayStack<T>::DeleteByIndex(int _i)
+T ArrayStack<T>::Remove(int _i)
 {
-    if (_i > mSize - 1)
+    T x = mArr[_i];
+    for (int j = _i; j < mSize - 1; j++)
     {
-        return {};
+        mArr[j] = mArr[j + 1];
     }
-    else 
-    {
-        T x = mArr[_i];
-        for(int j = _i; j < mSize - 1; j++)
-        {
-            mArr[j] = mArr[j + 1];
-        }
-        mSize--;
+    mSize--;
 
-        if (mArr.GetLength() >= 3 * mSize)
-        {
-            Resize();
-        }
-        return x;
+    if (mArr.GetLength() >= 3 * mSize)
+    {
+        Resize();
     }
+    return x;
 }
 
 template <typename T>
 void ArrayStack<T>::Resize()
 {
     Array<T> resizedArray(std::max(2 * mSize, 1));
-    for(int i = 0; i < mSize; i++)
+    for (int i = 0; i < mSize; i++)
     {
         resizedArray[i] = mArr[i];
     }

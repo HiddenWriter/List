@@ -5,7 +5,7 @@ class ArrayDeque
 private:
 
 	Array<T> mArr;
-	int mCurrentIndex;
+	int mElem2Remove;
 	int mNumOfElem;
 
 private:
@@ -17,16 +17,17 @@ public:
 	ArrayDeque();
 	~ArrayDeque() {}
 
-	std::optional<T> Get(int _i);
+	T Get(int _i);
 
-	std::optional<T> Set(int _i, T _x);
+	T Set(int _i, T _x);
 	
-	bool Add(int _i, T _x);
+	void Add(int _i, T _x);
 
-	std::optional<T> Delete(int _i);
+	T Remove(int _i);
 
 	void Print();
 
+	const int GetSize() const noexcept;
 };
 
 template <typename T>
@@ -35,67 +36,61 @@ ArrayDeque<T>::ArrayDeque()
 {}
 
 template <typename T>
-std::optional<T> ArrayDeque<T>::Get(int _i)
+T ArrayDeque<T>::Get(int _i)
 {
-	if (_i >= mArr.GetLength()) return {};
-	else return mArr[(mCurrentIndex + _i) % mArr.GetLength()];
+	return mArr[(mElem2Remove + _i) % mArr.GetLength()];
 }
 
 template <typename T>
-std::optional<T> ArrayDeque<T>::Set(int _i, T _x)
+T ArrayDeque<T>::Set(int _i, T _x)
 {
-	if (_i >= mArr.GetLength()) return {};
-
-	T y = mArr[(mCurrentIndex + _i) % mArr.GetLength()];
-	mArr[(mCurrentIndex + _i) % mArr.GetLength()] = _x;
+	T y = mArr[(mElem2Remove + _i) % mArr.GetLength()];
+	mArr[(mElem2Remove + _i) % mArr.GetLength()] = _x;
 	return y;
 }
 
 template <typename T>
-bool ArrayDeque<T>::Add(int _i, T _x)
+void ArrayDeque<T>::Add(int _i, T _x)
 {
-	if (_i > mArr.GetLength()) return false;
 	if (mNumOfElem + 1 > mArr.GetLength()) Resize();
 	if (_i < mNumOfElem / 2)
 	{
-		mCurrentIndex = (mCurrentIndex == 0) ? mArr.GetLength() - 1 : mCurrentIndex - 1;
+		mElem2Remove = (mElem2Remove == 0) ? mArr.GetLength() - 1 : mElem2Remove - 1;
 		for (int k = 0; k < _i; k++)
 		{
-			mArr[(mCurrentIndex + k) % mArr.GetLength()] = mArr[(mCurrentIndex + k + 1) % mArr.GetLength()];
+			mArr[(mElem2Remove + k) % mArr.GetLength()] = mArr[(mElem2Remove + k + 1) % mArr.GetLength()];
 		}
 	}
 	else
 	{
 		for (int k = mNumOfElem; k > _i; k--)
 		{
-			mArr[(mCurrentIndex + k) % mArr.GetLength()] = mArr[(mCurrentIndex + k - 1) % mArr.GetLength()];
+			mArr[(mElem2Remove + k) % mArr.GetLength()] = mArr[(mElem2Remove + k - 1) % mArr.GetLength()];
 		}
 	}
-	mArr[(_i + mCurrentIndex) % mArr.GetLength()] = _x;
+	mArr[(_i + mElem2Remove) % mArr.GetLength()] = _x;
 	mNumOfElem++;
-	return true;
+	return;
 }
 
 template <typename T>
-std::optional<T> ArrayDeque<T>::Delete(int _i)
+T ArrayDeque<T>::Remove(int _i)
 {
-	if (_i > mArr.GetLength()) return {};
-	
-	T y = mArr[(mCurrentIndex + _i) % mArr.GetLength()];
+	T y = mArr[(mElem2Remove + _i) % mArr.GetLength()];
 
 	if (_i < mNumOfElem / 2)
 	{
 		for (int k = _i; k > 0; k--)
 		{
-			mArr[(mCurrentIndex + k) % mArr.GetLength()] = mArr[(mCurrentIndex + k - 1) % mArr.GetLength()];
+			mArr[(mElem2Remove + k) % mArr.GetLength()] = mArr[(mElem2Remove + k - 1) % mArr.GetLength()];
 		}
-		mCurrentIndex = (mCurrentIndex + 1) % mArr.GetLength();
+		mElem2Remove = (mElem2Remove + 1) % mArr.GetLength();
 	}
 	else
 	{
 		for (int k = _i; k < mNumOfElem - 1; k++)
 		{
-			mArr[(mCurrentIndex + k) % mArr.GetLength()] = mArr[(mCurrentIndex + k + 1) % mArr.GetLength()];
+			mArr[(mElem2Remove + k) % mArr.GetLength()] = mArr[(mElem2Remove + k + 1) % mArr.GetLength()];
 		}
 	}
 	mNumOfElem--;
@@ -125,4 +120,10 @@ void ArrayDeque<T>::Resize()
 	mCurrentIndex = 0;
 
 	return;
+}
+
+template <typename T>
+const int ArrayDeque<T>::GetSize() const noexcept
+{
+	return this->mNumOfElem;
 }
