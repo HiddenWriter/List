@@ -1,5 +1,7 @@
 #pragma once
-
+#include "Array.h"
+#include <iostream>
+#include <cmath>
 template <typename T>
 class ArrayQueue
 {
@@ -27,7 +29,7 @@ public:
 
 template <typename T>
 ArrayQueue<T>::ArrayQueue()
-	: mArr(1), mCurrentIndex(0), mNumOfElem(0)
+	: mArr(1), mElem2Remove(0), mNumOfElem(0)
 {}
 
 template <typename T>

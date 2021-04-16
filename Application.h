@@ -1,5 +1,15 @@
 #pragma once
-
+#include <string>
+#include <iostream>
+#include <utility>
+#include "ItemType.h"
+#include "ArrayStack.h"
+#include "ArrayQueue.h"
+#include "ArrayDeque.h"
+enum class TYPE
+{
+    STACKARRAY, QUEUEARRAY, DEQUEARRAY, UNDEFINED
+};
 // Represents List interface
 class Application
 {

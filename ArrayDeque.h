@@ -1,4 +1,7 @@
 #pragma once
+#include "Array.h"
+#include <iostream>
+#include <algorithm>
 template <typename T>
 class ArrayDeque
 {
@@ -32,7 +35,7 @@ public:
 
 template <typename T>
 ArrayDeque<T>::ArrayDeque()
-	: mArr(1), mCurrentIndex(0), mNumOfElem(0)
+	: mArr(1), mElem2Remove(0), mNumOfElem(0)
 {}
 
 template <typename T>
@@ -103,7 +106,7 @@ void ArrayDeque<T>::Print()
 {
 	for (int i = 0; i < mNumOfElem; i++)
 	{
-		std::cout << mArr[(mCurrentIndex + i) % mArr.GetLength()];
+		std::cout << mArr[(mElem2Remove + i) % mArr.GetLength()];
 	}
 	return;
 }
@@ -114,10 +117,10 @@ void ArrayDeque<T>::Resize()
 	Array<T> b(std::max(2 * mNumOfElem, 1));
 	for (int k = 0; k < mNumOfElem; k++)
 	{
-		b[k] = mArr[(mCurrentIndex + k) % mArr.GetLength()];
+		b[k] = mArr[(mNumOfElem + k) % mArr.GetLength()];
 	}
 	mArr = b;
-	mCurrentIndex = 0;
+	mNumOfElem = 0;
 
 	return;
 }

@@ -1,5 +1,6 @@
 #pragma once
-
+#include <iostream>
+#include "Array.h"
 template <typename T>
 class ArrayStack
 {
@@ -36,19 +37,12 @@ ArrayStack<T>::~ArrayStack()
 template <typename T>
 T ArrayStack<T>::Get(int _i)
 {
-    if (_i > this->mSize)
-        return nullptr;
-    else
-        return mArr[_i];
+    return mArr[_i];
 }
 
 template <typename T>
 T ArrayStack<T>::Set(int _i, T _x)
 {
-    if (_i > this->mSize)
-    {
-        return nullptr;
-    }
     T y = mArr[_i];
     mArr[_i] = _x;
     return y;
@@ -66,7 +60,6 @@ void ArrayStack<T>::Add(int _i, T _x)
     }
     mArr[_i] = _x;
     mSize++;
-    return true;
 }
 
 template <typename T>
