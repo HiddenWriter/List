@@ -1,4 +1,14 @@
 #pragma once
+#include <string>
+#include <iostream>
+#include <utility>
+#include "ItemType.h"
+#include "ArrayStack.h"
+#include "ArrayQueue.h"
+enum class TYPE
+{
+    STACKARRAY, ARRAYQUEUE, UNDEFINED
+};
 
 class Application
 {
@@ -16,16 +26,17 @@ public:
 
     void Add();
 
-    void Delete();
+    void Remove();
 
     void Print();
 
     void Destroy();
 
-    void Search();
+    void Get();
 
-    void Replace();
+    void Set();
 
+    void Size();
 private:
     int mCmd;
     void* mPtr;
