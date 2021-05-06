@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Application.h"
 
 Application::Application()
@@ -47,32 +46,26 @@ void Application::Run()
         while (!workCmd)
         {
             PrintType();
-            std::cout <<
-                "\n" <<
-                "\n\t 1 : Add Item \n" <<
-                "\n\t 2 : Delete Item \n" <<
-                "\n\t 3 : Print Item \n" <<
-                "\n\t 4 : Search Item \n" <<
-                "\n\t 5 : Replace Item \n" <<
-                "\n\t 0 : Return to main menu \n";
             std::cin >> mCmd;
-
             switch (mCmd)
             {
             case 1:
                 Add();
                 break;
             case 2:
-                Delete();
+                Remove();
                 break;
             case 3:
                 Print();
                 break;
             case 4:
-                Search();
+                Get();
                 break;
             case 5:
-                Replace();
+                Set();
+                break;
+            case 6:
+                Size();
                 break;
             case 0:
                 workCmd = true;
@@ -97,8 +90,16 @@ void Application::PrintType() noexcept
     {
     case TYPE::STACKARRAY:
         {
-            std::cout << "\t\t STACKARRAY \n";
-            break;
+            std::cout << "\t\t Array Stack \n";
+            std::cout << "\n"
+                  << "\n\t 1 : Add Item \n"
+                  << "\n\t 2 : Remove Item \n"
+                  << "\n\t 3 : Print Item \n"
+                  << "\n\t 4 : Get Item \n"
+                  << "\n\t 5 : Set Item \n"
+                  << "\n\t 6 : Get Size \n "
+                  << "\n\t 0 : Return to main menu \n";
+        break;
         }
     default:
         break;
@@ -113,29 +114,12 @@ void Application::Add()
     case TYPE::STACKARRAY:
         {
 		    ItemType tempItem;
-            int tempIndex(0);
-            int type(0);
-            std::cout <<
-                "\n\t 1 : Push Item ( Auto Index )" <<
-                "\n\t 2 : Specify index " <<
-                "\n\t >> ";
-            std::cin >> type;
-            if (type == 1)
-            {
-                tempIndex = static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize();
-            }
-            else
-            {
-				std::cout <<
-                "\n\t Index : ";
-				std::cin >> tempIndex;
-				std::cout << "\n";
-            }
-			tempItem.SetAll();
-            if (static_cast<ArrayStack<ItemType>*>(mPtr)->Add(tempIndex, tempItem)) sux = true;
-
+            tempItem.SetAll();
+            static_cast<ArrayStack<ItemType> *>(mPtr)->Add(
+            static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize(), tempItem);
+            sux = true;
+            break;
         }
-        break;
     default:
         break;
     }
@@ -149,19 +133,21 @@ void Application::Add()
     }
 }
 
-void Application::Delete()
+void Application::Remove()
 {
     bool sux(false);
+    ItemType tempItem;
     switch (GetType())
     {
     case TYPE::STACKARRAY:
 		{
-			int tempIndex(0);
-			std::cout <<
-				"\n\t Index : ";
-			std::cin >> tempIndex;
-			if (static_cast<ArrayStack<ItemType>*>(mPtr)->DeleteByIndex(tempIndex)) sux = true;
-
+            if (static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize() == 0) break;
+            else 
+            {
+			    int tempIndex(static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize() - 1);
+			    tempItem = static_cast<ArrayStack<ItemType>*>(mPtr)->Remove(tempIndex); 
+                sux = true;
+            }
 			break;
 		}
     default:
@@ -169,7 +155,10 @@ void Application::Delete()
     }
     if (sux)
     {
-        std::cout << msg.first;
+        std::cout << 
+        msg.first << "\n" <<
+        "\t Removed Item \n" <<
+        tempItem << '\n';
     }
     else
     {
@@ -191,21 +180,22 @@ void Application::Print()
     }
 }
 
-void Application::Search()
+void Application::Get()
 {
+    ItemType item;
     bool sux(false);
     switch (GetType())
     {
     case TYPE::STACKARRAY:
     {
         int tempIndex(0);
-        std::cout <<
-            "\n\t Index : ";
+        std::cout << "\n\t Index : ";
         std::cin >> tempIndex;
-        if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Get(tempIndex))
+        if (tempIndex >= static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize());
+        else
         {
+            item = static_cast<ArrayStack<ItemType> *>(mPtr)->Get(tempIndex);
             sux = true;
-            std::cout << "\n" << item.value();
         }
         break;
     }
@@ -214,7 +204,8 @@ void Application::Search()
     }
     if (sux)
     {
-        std::cout << msg.first;
+        std::cout << msg.first << "\n"
+                  << item << "\n";
     }
     else
     {
@@ -222,8 +213,9 @@ void Application::Search()
     }
 }
 
-void Application::Replace()
+void Application::Set()
 {
+    ItemType item;
     bool sux(false);
     switch (GetType())
     {
@@ -231,20 +223,15 @@ void Application::Replace()
     {
         ItemType tempItem;
         int tempIndex(0);
-        std::cout <<
-            "\n\t Index : ";
+        std::cout << "\n\t Index : ";
         std::cin >> tempIndex;
         tempItem.SetAll();
-
-        if (auto item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem))
-        {
-            sux = true;
-            std::cout <<
-                "\n\t Item Changed " <<
-                "\n\t ID   : " << item.value().GetID() << " -> " << tempItem.GetID() <<
-                "\n\t NAME : " << item.value().GetName() << " -> " << tempItem.GetName() << "\n";
-
-        }
+        item = static_cast<ArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem);
+        sux = true;
+        std::cout << 
+        "\n\t Item Changed "<< 
+        "\n\t ID   : " << item.GetID() << " -> " << tempItem.GetID() << 
+        "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
         break;
     }
     default:
@@ -265,6 +252,18 @@ void Application::Destroy()
     {
     case TYPE::STACKARRAY:
         delete[] static_cast<ArrayStack<ItemType>*>(mPtr);
+        break;
+    default:
+        break;
+    }
+}
+void Application::Size()
+{
+    switch (GetType())
+    {
+    case TYPE::STACKARRAY:
+        std::cout << 
+        "\n\t Current Size : " << static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
     default:
         break;
