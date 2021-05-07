@@ -1,5 +1,6 @@
-#include <utility>
 #include "Application.h"
+
+static int numOfTestCase (0);
 
 Application::Application()
     : mCmd(-1)
@@ -7,8 +8,83 @@ Application::Application()
     msg.first = "\t\t Successfully Done. \n";
     msg.second = "\t\t Error. \t\n";
 }
+
 Application::~Application()
 {
+}
+
+bool Application::GenerateTestCase()
+{
+    std::ofstream outFile;
+    outFile.open("TestCase.txt", std::ofstream::out | std::ofstream::trunc);
+    if(!outFile)
+    {
+        std::cerr << 
+        "\n\t Failed to Generating test case. \n";
+        outFile.close();
+        return false;
+    }
+    else
+    {
+        for(int i = 0; i < numOfTestCase; i++)
+        {
+            outFile << std::rand() % numOfTestCase << " " << std::rand() % numOfTestCase << "\n";
+        }
+        outFile.close();
+        return true;
+    }
+}
+
+bool Application::LoadTestCase() 
+{
+    std::cout << 
+    "\n\t Type (only positive integer) number of test cases : ";
+    std::cin >> numOfTestCase;
+    std::cout << "\n";
+    GenerateTestCase();
+
+    std::fstream inFile;
+    inFile.open("TestCase.txt");
+    if(!inFile)
+    {
+        std::cout << 
+        "\n\t Incorrect test case file path. \n";
+        inFile.close();
+        return false;
+    }
+    else 
+    {
+        int id(0);
+        std::string name;
+        for(int i = 0; i < numOfTestCase; i++)
+        {
+            inFile >> id;
+            inFile >> name;
+            ItemType tempItem(id, name);
+            switch (GetType())
+            {
+                case TYPE::STACKARRAY:
+                    static_cast<ArrayStack<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
+                case TYPE::ARRAYQUEUE:
+                    static_cast<ArrayQueue<ItemType>*>(mPtr)->Add(tempItem);
+                    break;
+                case TYPE::ARRAYDEQUE:
+                    static_cast<ArrayDeque<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
+                default:
+                break;
+            }
+    }
+        inFile.close();
+        return true;    
+    }
 }
 void Application::Run()
 {
@@ -35,14 +111,14 @@ void Application::Run()
             }
             case 2:
             {
-                GetType() = TYPE::QUEUEARRAY;
+                GetType() = TYPE::ARRAYQUEUE;
                 mPtr = new ArrayQueue<ItemType>[1];
                 appType = true;
                 break;
             }
             case 3:
             {
-                GetType() = TYPE::DEQUEARRAY;
+                GetType() = TYPE::ARRAYDEQUE;
                 mPtr = new ArrayDeque<ItemType>[1];
                 appType = true;
                 break;
@@ -82,6 +158,9 @@ void Application::Run()
             case 6:
                 Size();
                 break;
+            case 99:
+                LoadTestCase();
+                break;
             case 0:
                 workCmd = true;
                 Destroy();
@@ -113,11 +192,12 @@ void Application::PrintType() noexcept
                   << "\n\t 4 : Get Item \n"
                   << "\n\t 5 : Set Item \n"
                   << "\n\t 6 : Get Size \n "
+                  << "\n\t 99: Load Test Case \n"
                   << "\n\t 0 : Return to main menu \n";
 
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         std::cout << "\t\t Array Queue \n";
         std::cout << "\n"
@@ -125,11 +205,12 @@ void Application::PrintType() noexcept
                   << "\n\t 2 : Remove Item \n"
                   << "\n\t 3 : Print Item \n"
                   << "\n\t 6 : Get Size \n"
+                  << "\n\t 99: Load Test Case \n"
                   << "\n\t 0 : Return to main menu \n";
 
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         std::cout << "\t\t Array Deque \n";
         std::cout << "\n"
@@ -139,6 +220,7 @@ void Application::PrintType() noexcept
                   << "\n\t 4 : Get Item \n"
                   << "\n\t 5 : Set Item \n"
                   << "\n\t 6 : Get Size \n"
+                  << "\n\t 99: Load Test Case \n"
                   << "\n\t 0 : Return to main menu \n";
         break;
     }
@@ -161,7 +243,7 @@ void Application::Add()
         sux = true;
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         ItemType tempItem;
         tempItem.SetAll();
@@ -169,15 +251,18 @@ void Application::Add()
             sux = true;
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         ItemType tempItem;
-        int tempIndex(0);
+        int ctrlHT(0);
         tempItem.SetAll();
-        std::cout << "\n\t Index to Add : ";
-        std::cin >> tempIndex;
+        std::cout << 
+                "\n\t Add 0 index (1) "
+                "\n\t Add Last index (2) \n";
+        std::cin >> ctrlHT;
         std::cout << "\n";
-        static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(tempIndex, tempItem);
+        if(ctrlHT == 1) static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(0, tempItem);
+        else static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem);
         sux = true;
         break;
     }
@@ -202,28 +287,42 @@ void Application::Remove()
     {
     case TYPE::STACKARRAY:
     {
-        std::cout << "\n";
-        tempItem = static_cast<ArrayStack<ItemType> *>(mPtr)->Remove(
-            static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() - 1);
-        sux = true;
-
+        if(static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            std::cout << "\n";
+            tempItem = static_cast<ArrayStack<ItemType> *>(mPtr)->Remove(
+                static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() - 1);
+            sux = true;
+        }
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
-        tempItem = static_cast<ArrayQueue<ItemType> *>(mPtr)->Remove();
-        sux = true;
-        break;
+        if(static_cast<ArrayQueue<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            tempItem = static_cast<ArrayQueue<ItemType> *>(mPtr)->Remove();
+            sux = true;
+            break;
+        }
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
-        int idx(0);
-        std::cout << "\n\t Index : ";
-        std::cin >> idx;
-        std::cout << "\n";
-        tempItem = static_cast<ArrayDeque<ItemType> *>(mPtr)->Remove(idx);
-        sux = true;
-        break;
+        if(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            int ctrlFL(0);
+            std::cout << 
+                    "\n\t Remove 0 index (1) " <<
+                    "\n\t Remove last index (2) \n";
+            std::cin >> ctrlFL;
+            std::cout << "\n";
+            if(ctrlFL == 1) tempItem = static_cast<ArrayDeque<ItemType> *>(mPtr)->Remove(0);
+            else tempItem = static_cast<ArrayDeque<ItemType>*>(mPtr)->Remove(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize() - 1);
+            sux = true;
+            break;
+        }
     }
     default:
         break;
@@ -232,7 +331,7 @@ void Application::Remove()
     {
         std::cout << 
         msg.first << "\n" <<
-        "Removed Item : << " << tempItem << '\n';
+        "\t - Removed Item - \n" << tempItem << '\n';
     }
     else
     {
@@ -249,12 +348,12 @@ void Application::Print()
         static_cast<ArrayStack<ItemType> *>(mPtr)->Print();
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         static_cast<ArrayQueue<ItemType> *>(mPtr)->Print();
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         static_cast<ArrayDeque<ItemType> *>(mPtr)->Print();
         break;
@@ -283,7 +382,7 @@ void Application::Get()
         }
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         std::cout << "\n\t Not implemented \n";
         break;
@@ -291,7 +390,7 @@ void Application::Get()
 
     default:
         break;
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         int idx(0);
         std::cout << "\n\t Index : ";
@@ -333,12 +432,12 @@ void Application::Set()
         "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         std::cout << "\n\t Not implemented \n";
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         ItemType tempItem;
         int idx(0);
@@ -374,10 +473,10 @@ void Application::Destroy()
     case TYPE::STACKARRAY:
         delete[] static_cast<ArrayStack<ItemType> *>(mPtr);
         break;
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
         delete[] static_cast<ArrayQueue<ItemType> *>(mPtr);
         break;
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
         delete[] static_cast<ArrayDeque<ItemType> *>(mPtr);
         break;
     default:
@@ -392,12 +491,13 @@ void Application::Size()
         std::cout << 
         "\n\t Current Size : " << static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
         std::cout << 
         "\n\t Current SIze : " << static_cast<ArrayQueue<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
-    case TYPE::DEQUEARRAY:
-        delete[] static_cast<ArrayDeque<ItemType> *>(mPtr);
+    case TYPE::ARRAYDEQUE:
+        std::cout <<
+        "\n\t Current SIze : " << static_cast<ArrayDeque<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
     default:
         break;

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <utility>
 #include "ItemType.h"
 #include "ArrayStack.h"
@@ -8,7 +9,7 @@
 #include "ArrayDeque.h"
 enum class TYPE
 {
-    STACKARRAY, QUEUEARRAY, DEQUEARRAY, UNDEFINED
+    STACKARRAY, ARRAYQUEUE, ARRAYDEQUE, UNDEFINED
 };
 // Represents List interface
 class Application
@@ -20,6 +21,8 @@ public:
     ~Application();
 
     void Run();
+
+private:
 
     TYPE& GetType() noexcept;
 
@@ -37,7 +40,12 @@ public:
 
     void Get();
 
-    void Size();    
+    void Size();
+
+    bool LoadTestCase();
+
+    bool GenerateTestCase();
+
 private:
     int mCmd;
     void* mPtr;
