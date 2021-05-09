@@ -78,6 +78,12 @@ bool Application::LoadTestCase()
                         static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem
                     );
                     break;
+                case TYPE::DUALARRAYDEQUE:
+                    static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
                 default:
                 break;
             }
@@ -96,6 +102,7 @@ void Application::Run()
             std::cout << "\n\t 1 : List Interface : Array Stack "
                       << "\n\t 2 : FIFO Interface : Array Queue "
                       << "\n\t 3 : List Interface : Array Deque "
+                      << "\n\t 4 : List Interface : Dual Array Deque "
                       << "\n\t 0 : Terminate Programme"
                       << "\n\t >>";
             std::cin >> mCmd;
@@ -120,6 +127,13 @@ void Application::Run()
             {
                 GetType() = TYPE::ARRAYDEQUE;
                 mPtr = new ArrayDeque<ItemType>[1];
+                appType = true;
+                break;
+            }
+            case 4:
+            {
+                GetType() = TYPE::DUALARRAYDEQUE;
+                mPtr = new DualArrayDeque<ItemType>[1];
                 appType = true;
                 break;
             }
@@ -224,6 +238,20 @@ void Application::PrintType() noexcept
                   << "\n\t 0 : Return to main menu \n";
         break;
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        std::cout << 
+        "\n\t\t Dual Array Deque \n" <<
+        "\n\t 1 : Add Item \n" <<
+        "\n\t 2 : Remove Item \n" <<
+        "\n\t 3 : Print Item \n " <<
+        "\n\t 4 : Get Item \n" <<
+        "\n\t 5 : Set Item \n" <<
+        "\n\t 6 : Get Size \n" <<
+        "\n\t 99: Load Test Case \n" <<
+        "\n\t 0 : Return to main menu \n";
+        break;
+    }
     default:
         break;
     }
@@ -263,6 +291,20 @@ void Application::Add()
         std::cout << "\n";
         if(ctrlHT == 1) static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(0, tempItem);
         else static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem);
+        sux = true;
+        break;
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        ItemType tempItem;
+        int ctrlHT(0);
+        tempItem.SetAll();
+        std::cout <<
+        "\n\t Add to 0 index (1)"
+        "\n\t Add to last index (2) \n";
+        std::cin >> ctrlHT;
+        if(ctrlHT == 1) static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add(0, tempItem);
+        else static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add(static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem);
         sux = true;
         break;
     }
@@ -324,6 +366,23 @@ void Application::Remove()
             break;
         }
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        if(static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            int ctrlFL(0);
+            std::cout << 
+                    "\n\t Remove 0 index (1) " <<
+                    "\n\t Remove last index (2) \n";
+            std::cin >> ctrlFL;
+            std::cout << "\n";
+            if(ctrlFL == 1) tempItem = static_cast<DualArrayDeque<ItemType> *>(mPtr)->Remove(0);
+            else tempItem = static_cast<DualArrayDeque<ItemType>*>(mPtr)->Remove(static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize() - 1);
+            sux = true;
+            break;
+        }
+    }
     default:
         break;
     }
@@ -358,6 +417,11 @@ void Application::Print()
         static_cast<ArrayDeque<ItemType> *>(mPtr)->Print();
         break;
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        static_cast<DualArrayDeque<ItemType>*>(mPtr)->Print();
+        break;
+    }
     default:
         break;
     }
@@ -387,9 +451,6 @@ void Application::Get()
         std::cout << "\n\t Not implemented \n";
         break;
     }
-
-    default:
-        break;
     case TYPE::ARRAYDEQUE:
     {
         int idx(0);
@@ -399,6 +460,17 @@ void Application::Get()
         sux = true;
         break;
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        int idx(0);
+        std::cout << "\n\t Index : ";
+        std::cin >> idx;
+        item = static_cast<DualArrayDeque<ItemType> *>(mPtr)->Get(idx);
+        sux = true;
+        break;
+    }
+    default:
+        break;
     }
     if (sux)
     {
@@ -454,6 +526,23 @@ void Application::Set()
         "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
         break;
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        ItemType tempItem;
+        int idx(0);
+
+        std::cout << "\n\t Index : ";
+        std::cin >> idx;
+        tempItem.SetAll();
+
+        item = static_cast<DualArrayDeque<ItemType> *>(mPtr)->Set(idx, tempItem);
+        sux = true;
+        std::cout << 
+        "\n\t Item Changed " << 
+        "\n\t ID   : " << item.GetID() << " -> " << tempItem.GetID() << 
+        "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
+        break;
+    }
     default:
         break;
     }
@@ -479,6 +568,9 @@ void Application::Destroy()
     case TYPE::ARRAYDEQUE:
         delete[] static_cast<ArrayDeque<ItemType> *>(mPtr);
         break;
+    case TYPE::DUALARRAYDEQUE:
+        delete[] static_cast<DualArrayDeque<ItemType>*>(mPtr);
+        break;
     default:
         break;
     }
@@ -498,6 +590,10 @@ void Application::Size()
     case TYPE::ARRAYDEQUE:
         std::cout <<
         "\n\t Current SIze : " << static_cast<ArrayDeque<ItemType> *>(mPtr)->GetSize() << "\n";
+        break;
+    case TYPE::DUALARRAYDEQUE:
+        std::cout <<
+        "\n\t Current SIze : " << static_cast<DualArrayDeque<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
     default:
         break;

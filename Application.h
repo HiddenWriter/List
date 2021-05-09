@@ -7,9 +7,10 @@
 #include "ArrayStack.h"
 #include "ArrayQueue.h"
 #include "ArrayDeque.h"
+#include "DualArrayDeque.h"
 enum class TYPE
 {
-    STACKARRAY, ARRAYQUEUE, ARRAYDEQUE, UNDEFINED
+    STACKARRAY, ARRAYQUEUE, ARRAYDEQUE, DUALARRAYDEQUE, ROOTISHARRAYSTACK, UNDEFINED
 };
 // Represents List interface
 class Application

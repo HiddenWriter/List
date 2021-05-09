@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include "Array.h"
+
 template <typename T>
 class ArrayQueue
 {
