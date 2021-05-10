@@ -8,6 +8,7 @@
 #include "ArrayQueue.h"
 #include "ArrayDeque.h"
 #include "DualArrayDeque.h"
+#include "RootishArrayStack.h"
 enum class TYPE
 {
     STACKARRAY, ARRAYQUEUE, ARRAYDEQUE, DUALARRAYDEQUE, ROOTISHARRAYSTACK, UNDEFINED
