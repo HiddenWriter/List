@@ -1,13 +1,19 @@
 #pragma once
 #include <iostream>
 #include "Array.h"
+
+template <typename T>
+class DualArrayDeque;
+
 template <typename T>
 class ArrayStack
 {
 public:
     ArrayStack();
+    ArrayStack(int _i);
     ~ArrayStack();
 
+    T& operator[](int _idx);
     T Get(int _i);
     T Set(int _i, T _x);
     void Add(int _i, T _x);
@@ -15,10 +21,9 @@ public:
     int GetSize() const noexcept;
     void Print() noexcept;
 
-private:
+protected:
+    friend class DualArrayDeque<T>;
     void Resize();
-
-private:
     Array<T> mArr;
     int mSize;
 };
@@ -26,14 +31,14 @@ private:
 template <typename T>
 ArrayStack<T>::ArrayStack()
     : mArr(1), mSize(0)
-{
-}
-
+{}
+template <typename T>
+ArrayStack<T>::ArrayStack(int _i)
+    : mArr(_i), mSize(0)
+{}
 template <typename T>
 ArrayStack<T>::~ArrayStack()
-{
-    return;
-}
+{}
 template <typename T>
 T ArrayStack<T>::Get(int _i)
 {
@@ -51,8 +56,7 @@ T ArrayStack<T>::Set(int _i, T _x)
 template <typename T>
 void ArrayStack<T>::Add(int _i, T _x)
 {
-    if (mSize + 1 > mArr.GetLength())
-        Resize();
+    if (mSize + 1 > mArr.GetLength()) Resize();
 
     for (int j = mSize; j > _i; j--)
     {
@@ -106,4 +110,10 @@ void ArrayStack<T>::Print() noexcept
         std::cout << mArr[i];
     }
     return;
+}
+
+template <typename T>
+T& ArrayStack<T>::operator[](int _idx)
+{
+    return mArr[_idx];
 }

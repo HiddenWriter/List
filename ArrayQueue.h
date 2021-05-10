@@ -1,13 +1,14 @@
 #pragma once
-#include "Array.h"
+#include <algorithm>
 #include <iostream>
-#include <cmath>
+#include "Array.h"
+
 template <typename T>
 class ArrayQueue
 {
 private:
 	Array<T> mArr;
-	int mElem2Remove; // j
+	int mElem2Remove; // j 
 	int mNumOfElem; // n
 
 private:
@@ -21,7 +22,7 @@ public:
 	bool Add(T _x);
 	
 	T Remove();
-	
+
 	void Print();
 
 	const int GetSize() const noexcept;

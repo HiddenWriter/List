@@ -13,7 +13,7 @@ public:
     const int GetLength() const noexcept;
 
 protected:
-    int mLength;
+    int mLength; // size of the array
     T* mArray;
 };
 
@@ -26,9 +26,9 @@ Array<T>::Array(int _length)
 
 template <typename T>
 Array<T>::Array()
-    : mLength(9)
+    : mLength(1)
 {
-    mArray = new T[9];   
+    mArray = new T[mLength];   
 }
 
 template <typename T>

@@ -8,8 +8,8 @@ class ArrayDeque
 private:
 
 	Array<T> mArr;
-	int mElem2Remove;
-	int mNumOfElem;
+	int mElem2Remove;	// j
+	int mNumOfElem;		// n
 
 private:
 
@@ -59,7 +59,7 @@ void ArrayDeque<T>::Add(int _i, T _x)
 	if (_i < mNumOfElem / 2)
 	{
 		mElem2Remove = (mElem2Remove == 0) ? mArr.GetLength() - 1 : mElem2Remove - 1;
-		for (int k = 0; k < _i; k++)
+		for (int k = 0; k <= _i - 1; k++)
 		{
 			mArr[(mElem2Remove + k) % mArr.GetLength()] = mArr[(mElem2Remove + k + 1) % mArr.GetLength()];
 		}
@@ -91,6 +91,7 @@ T ArrayDeque<T>::Remove(int _i)
 	}
 	else
 	{
+		std::cout << "\n\t\t -- CALLED ! -- \n";
 		for (int k = _i; k < mNumOfElem - 1; k++)
 		{
 			mArr[(mElem2Remove + k) % mArr.GetLength()] = mArr[(mElem2Remove + k + 1) % mArr.GetLength()];
@@ -120,7 +121,7 @@ void ArrayDeque<T>::Resize()
 		b[k] = mArr[(mNumOfElem + k) % mArr.GetLength()];
 	}
 	mArr = b;
-	mNumOfElem = 0;
+	mElem2Remove = 0;
 
 	return;
 }

@@ -1,5 +1,6 @@
-#include <utility>
 #include "Application.h"
+
+static int numOfTestCase (0);
 
 Application::Application()
     : mCmd(-1)
@@ -7,8 +8,95 @@ Application::Application()
     msg.first = "\t\t Successfully Done. \n";
     msg.second = "\t\t Error. \t\n";
 }
+
 Application::~Application()
 {
+}
+
+bool Application::GenerateTestCase()
+{
+    std::ofstream outFile;
+    outFile.open("TestCase.txt", std::ofstream::out | std::ofstream::trunc);
+    if(!outFile)
+    {
+        std::cerr << 
+        "\n\t Failed to Generating test case. \n";
+        outFile.close();
+        return false;
+    }
+    else
+    {
+        for(int i = 0; i < numOfTestCase; i++)
+        {
+            outFile << std::rand() % numOfTestCase << " " << std::rand() % numOfTestCase << "\n";
+        }
+        outFile.close();
+        return true;
+    }
+}
+
+bool Application::LoadTestCase() 
+{
+    std::cout << 
+    "\n\t Type (only positive integer) number of test cases : ";
+    std::cin >> numOfTestCase;
+    std::cout << "\n";
+    GenerateTestCase();
+
+    std::fstream inFile;
+    inFile.open("TestCase.txt");
+    if(!inFile)
+    {
+        std::cout << 
+        "\n\t Incorrect test case file path. \n";
+        inFile.close();
+        return false;
+    }
+    else 
+    {
+        int id(0);
+        std::string name;
+        for(int i = 0; i < numOfTestCase; i++)
+        {
+            inFile >> id;
+            inFile >> name;
+            ItemType tempItem(id, name);
+            switch (GetType())
+            {
+                case TYPE::STACKARRAY:
+                    static_cast<ArrayStack<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
+                case TYPE::ARRAYQUEUE:
+                    static_cast<ArrayQueue<ItemType>*>(mPtr)->Add(tempItem);
+                    break;
+                case TYPE::ARRAYDEQUE:
+                    static_cast<ArrayDeque<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
+                case TYPE::DUALARRAYDEQUE:
+                    static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
+                case TYPE::ROOTISHARRAYSTACK:
+                    static_cast<RootishArrayStack<ItemType>*>(mPtr)->Add
+                    (
+                        static_cast<RootishArrayStack<ItemType>*>(mPtr)->GetSize(), tempItem
+                    );
+                    break;
+                default:
+                break;
+            }
+    }
+        inFile.close();
+        return true;    
+    }
 }
 void Application::Run()
 {
@@ -17,9 +105,11 @@ void Application::Run()
         bool appType(false);
         while (!appType)
         {
-            std::cout << "\n\t 1 : List Interface : Array Stack "
+            std::cout << "\n\t 1 : FILO Interface : Array Stack "
                       << "\n\t 2 : FIFO Interface : Array Queue "
                       << "\n\t 3 : List Interface : Array Deque "
+                      << "\n\t 4 : List Interface : Dual Array Deque "
+                      << "\n\t 5 : FILO Interface : Rootish Array Stack "
                       << "\n\t 0 : Terminate Programme"
                       << "\n\t >>";
             std::cin >> mCmd;
@@ -35,15 +125,29 @@ void Application::Run()
             }
             case 2:
             {
-                GetType() = TYPE::QUEUEARRAY;
+                GetType() = TYPE::ARRAYQUEUE;
                 mPtr = new ArrayQueue<ItemType>[1];
                 appType = true;
                 break;
             }
             case 3:
             {
-                GetType() = TYPE::DEQUEARRAY;
+                GetType() = TYPE::ARRAYDEQUE;
                 mPtr = new ArrayDeque<ItemType>[1];
+                appType = true;
+                break;
+            }
+            case 4:
+            {
+                GetType() = TYPE::DUALARRAYDEQUE;
+                mPtr = new DualArrayDeque<ItemType>[1];
+                appType = true;
+                break;
+            }
+            case 5:
+            {
+                GetType() = TYPE::ROOTISHARRAYSTACK;
+                mPtr = new RootishArrayStack<ItemType>[1];
                 appType = true;
                 break;
             }
@@ -82,6 +186,9 @@ void Application::Run()
             case 6:
                 Size();
                 break;
+            case 99:
+                LoadTestCase();
+                break;
             case 0:
                 workCmd = true;
                 Destroy();
@@ -113,11 +220,12 @@ void Application::PrintType() noexcept
                   << "\n\t 4 : Get Item \n"
                   << "\n\t 5 : Set Item \n"
                   << "\n\t 6 : Get Size \n "
+                  << "\n\t 99: Load Test Case \n"
                   << "\n\t 0 : Return to main menu \n";
 
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         std::cout << "\t\t Array Queue \n";
         std::cout << "\n"
@@ -125,11 +233,12 @@ void Application::PrintType() noexcept
                   << "\n\t 2 : Remove Item \n"
                   << "\n\t 3 : Print Item \n"
                   << "\n\t 6 : Get Size \n"
+                  << "\n\t 99: Load Test Case \n"
                   << "\n\t 0 : Return to main menu \n";
 
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         std::cout << "\t\t Array Deque \n";
         std::cout << "\n"
@@ -139,7 +248,36 @@ void Application::PrintType() noexcept
                   << "\n\t 4 : Get Item \n"
                   << "\n\t 5 : Set Item \n"
                   << "\n\t 6 : Get Size \n"
+                  << "\n\t 99: Load Test Case \n"
                   << "\n\t 0 : Return to main menu \n";
+        break;
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        std::cout << 
+        "\n\t\t Dual Array Deque \n" <<
+        "\n\t 1 : Add Item \n" <<
+        "\n\t 2 : Remove Item \n" <<
+        "\n\t 3 : Print Item \n " <<
+        "\n\t 4 : Get Item \n" <<
+        "\n\t 5 : Set Item \n" <<
+        "\n\t 6 : Get Size \n" <<
+        "\n\t 99: Load Test Case \n" <<
+        "\n\t 0 : Return to main menu \n";
+        break;
+    }
+    case TYPE::ROOTISHARRAYSTACK:
+    {
+        std::cout << 
+        "\n\t\t Rootish Array Stack \n" <<
+        "\n\t 1 : Add Item \n" <<
+        "\n\t 2 : Remove Item \n" <<
+        "\n\t 3 : Print Item \n " <<
+        "\n\t 4 : Get Item \n" <<
+        "\n\t 5 : Set Item \n" <<
+        "\n\t 6 : Get Size \n" <<
+        "\n\t 99: Load Test Case \n" <<
+        "\n\t 0 : Return to main menu \n";
         break;
     }
     default:
@@ -161,7 +299,7 @@ void Application::Add()
         sux = true;
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         ItemType tempItem;
         tempItem.SetAll();
@@ -169,15 +307,43 @@ void Application::Add()
             sux = true;
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         ItemType tempItem;
-        int tempIndex(0);
+        int ctrlHT(0);
         tempItem.SetAll();
-        std::cout << "\n\t Index to Add : ";
-        std::cin >> tempIndex;
+        std::cout << 
+                "\n\t Add 0 index (1) "
+                "\n\t Add Last index (2) \n";
+        std::cin >> ctrlHT;
         std::cout << "\n";
-        static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(tempIndex, tempItem);
+        if(ctrlHT == 1) static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(0, tempItem);
+        else static_cast<ArrayDeque<ItemType>*>(mPtr)->Add(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem);
+        sux = true;
+        break;
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        ItemType tempItem;
+        int ctrlHT(0);
+        tempItem.SetAll();
+        std::cout <<
+        "\n\t Add to 0 index (1)"
+        "\n\t Add to last index (2) \n";
+        std::cin >> ctrlHT;
+        if(ctrlHT == 1) static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add(0, tempItem);
+        else static_cast<DualArrayDeque<ItemType>*>(mPtr)->Add(static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize(), tempItem);
+        sux = true;
+        break;
+    }
+    case TYPE::ROOTISHARRAYSTACK:
+    {
+        ItemType tempItem;
+        tempItem.SetAll();
+        static_cast<RootishArrayStack<ItemType>*>(mPtr)->Add
+        (
+            static_cast<RootishArrayStack<ItemType>*>(mPtr)->GetSize(), tempItem
+        );
         sux = true;
         break;
     }
@@ -202,27 +368,70 @@ void Application::Remove()
     {
     case TYPE::STACKARRAY:
     {
-        std::cout << "\n";
-        tempItem = static_cast<ArrayStack<ItemType> *>(mPtr)->Remove(
-            static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() - 1);
-        sux = true;
-
+        if(static_cast<ArrayStack<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            std::cout << "\n";
+            tempItem = static_cast<ArrayStack<ItemType> *>(mPtr)->Remove(
+                static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() - 1);
+            sux = true;
+        }
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
-        tempItem = static_cast<ArrayQueue<ItemType> *>(mPtr)->Remove();
-        sux = true;
-        break;
+        if(static_cast<ArrayQueue<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            tempItem = static_cast<ArrayQueue<ItemType> *>(mPtr)->Remove();
+            sux = true;
+            break;
+        }
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
-        int idx(0);
-        std::cout << "\n\t Index : ";
-        std::cin >> idx;
-        std::cout << "\n";
-        tempItem = static_cast<ArrayDeque<ItemType> *>(mPtr)->Remove(idx);
-        sux = true;
+        if(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            int ctrlFL(0);
+            std::cout << 
+                    "\n\t Remove 0 index (1) " <<
+                    "\n\t Remove last index (2) \n";
+            std::cin >> ctrlFL;
+            std::cout << "\n";
+            if(ctrlFL == 1) tempItem = static_cast<ArrayDeque<ItemType> *>(mPtr)->Remove(0);
+            else tempItem = static_cast<ArrayDeque<ItemType>*>(mPtr)->Remove(static_cast<ArrayDeque<ItemType>*>(mPtr)->GetSize() - 1);
+            sux = true;
+            break;
+        }
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        if(static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            int ctrlFL(0);
+            std::cout << 
+                    "\n\t Remove 0 index (1) " <<
+                    "\n\t Remove last index (2) \n";
+            std::cin >> ctrlFL;
+            std::cout << "\n";
+            if(ctrlFL == 1) tempItem = static_cast<DualArrayDeque<ItemType> *>(mPtr)->Remove(0);
+            else tempItem = static_cast<DualArrayDeque<ItemType>*>(mPtr)->Remove(static_cast<DualArrayDeque<ItemType>*>(mPtr)->GetSize() - 1);
+            sux = true;
+            break;
+        }
+    }
+    case TYPE::ROOTISHARRAYSTACK:
+    {
+        if(static_cast<RootishArrayStack<ItemType>*>(mPtr)->GetSize() == 0) break;
+        else
+        {
+            std::cout << "\n";
+            tempItem = static_cast<RootishArrayStack<ItemType> *>(mPtr)->Remove(
+                static_cast<RootishArrayStack<ItemType> *>(mPtr)->GetSize() - 1);
+            sux = true;
+        }
         break;
     }
     default:
@@ -232,7 +441,7 @@ void Application::Remove()
     {
         std::cout << 
         msg.first << "\n" <<
-        "Removed Item : << " << tempItem << '\n';
+        "\t - Removed Item - \n" << tempItem << '\n';
     }
     else
     {
@@ -249,14 +458,24 @@ void Application::Print()
         static_cast<ArrayStack<ItemType> *>(mPtr)->Print();
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         static_cast<ArrayQueue<ItemType> *>(mPtr)->Print();
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         static_cast<ArrayDeque<ItemType> *>(mPtr)->Print();
+        break;
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        static_cast<DualArrayDeque<ItemType>*>(mPtr)->Print();
+        break;
+    }
+    case TYPE::ROOTISHARRAYSTACK:
+    {
+        static_cast<RootishArrayStack<ItemType>*>(mPtr)->Print();
         break;
     }
     default:
@@ -283,15 +502,12 @@ void Application::Get()
         }
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         std::cout << "\n\t Not implemented \n";
         break;
     }
-
-    default:
-        break;
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         int idx(0);
         std::cout << "\n\t Index : ";
@@ -300,6 +516,30 @@ void Application::Get()
         sux = true;
         break;
     }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        int idx(0);
+        std::cout << "\n\t Index : ";
+        std::cin >> idx;
+        item = static_cast<DualArrayDeque<ItemType> *>(mPtr)->Get(idx);
+        sux = true;
+        break;
+    }
+    case TYPE::ROOTISHARRAYSTACK:
+    {
+        int tempIndex(0);
+        std::cout << "\n\t Index : ";
+        std::cin >> tempIndex;
+        if (tempIndex >= static_cast<RootishArrayStack<ItemType> *>(mPtr)->GetSize());
+        else
+        {
+            item = static_cast<RootishArrayStack<ItemType> *>(mPtr)->Get(tempIndex);
+            sux = true;
+        }
+        break;
+    }
+    default:
+        break;
     }
     if (sux)
     {
@@ -333,12 +573,12 @@ void Application::Set()
         "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
         break;
     }
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
     {
         std::cout << "\n\t Not implemented \n";
         break;
     }
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
     {
         ItemType tempItem;
         int idx(0);
@@ -351,6 +591,38 @@ void Application::Set()
         sux = true;
         std::cout << 
         "\n\t Item Changed " << 
+        "\n\t ID   : " << item.GetID() << " -> " << tempItem.GetID() << 
+        "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
+        break;
+    }
+    case TYPE::DUALARRAYDEQUE:
+    {
+        ItemType tempItem;
+        int idx(0);
+
+        std::cout << "\n\t Index : ";
+        std::cin >> idx;
+        tempItem.SetAll();
+
+        item = static_cast<DualArrayDeque<ItemType> *>(mPtr)->Set(idx, tempItem);
+        sux = true;
+        std::cout << 
+        "\n\t Item Changed " << 
+        "\n\t ID   : " << item.GetID() << " -> " << tempItem.GetID() << 
+        "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
+        break;
+    }
+    case TYPE::ROOTISHARRAYSTACK:
+    {
+        ItemType tempItem;
+        int tempIndex(0);
+        std::cout << "\n\t Index : ";
+        std::cin >> tempIndex;
+        tempItem.SetAll();
+        item = static_cast<RootishArrayStack<ItemType>*>(mPtr)->Set(tempIndex, tempItem);
+        sux = true;
+        std::cout << 
+        "\n\t Item Changed "<< 
         "\n\t ID   : " << item.GetID() << " -> " << tempItem.GetID() << 
         "\n\t NAME : " << item.GetName() << " -> " << tempItem.GetName() << "\n";
         break;
@@ -374,11 +646,17 @@ void Application::Destroy()
     case TYPE::STACKARRAY:
         delete[] static_cast<ArrayStack<ItemType> *>(mPtr);
         break;
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
         delete[] static_cast<ArrayQueue<ItemType> *>(mPtr);
         break;
-    case TYPE::DEQUEARRAY:
+    case TYPE::ARRAYDEQUE:
         delete[] static_cast<ArrayDeque<ItemType> *>(mPtr);
+        break;
+    case TYPE::DUALARRAYDEQUE:
+        delete[] static_cast<DualArrayDeque<ItemType>*>(mPtr);
+        break;
+    case TYPE::ROOTISHARRAYSTACK:
+        delete[] static_cast<RootishArrayStack<ItemType>*>(mPtr);
         break;
     default:
         break;
@@ -392,12 +670,21 @@ void Application::Size()
         std::cout << 
         "\n\t Current Size : " << static_cast<ArrayStack<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
-    case TYPE::QUEUEARRAY:
+    case TYPE::ARRAYQUEUE:
         std::cout << 
-        "\n\t Current SIze : " << static_cast<ArrayQueue<ItemType> *>(mPtr)->GetSize() << "\n";
+        "\n\t Current Size : " << static_cast<ArrayQueue<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
-    case TYPE::DEQUEARRAY:
-        delete[] static_cast<ArrayDeque<ItemType> *>(mPtr);
+    case TYPE::ARRAYDEQUE:
+        std::cout <<
+        "\n\t Current Size : " << static_cast<ArrayDeque<ItemType> *>(mPtr)->GetSize() << "\n";
+        break;
+    case TYPE::DUALARRAYDEQUE:
+        std::cout <<
+        "\n\t Current Size : " << static_cast<DualArrayDeque<ItemType> *>(mPtr)->GetSize() << "\n";
+        break;
+    case TYPE::ROOTISHARRAYSTACK:
+        std::cout <<
+        "\n\t Current Size : " << static_cast<RootishArrayStack<ItemType> *>(mPtr)->GetSize() << "\n";
         break;
     default:
         break;
